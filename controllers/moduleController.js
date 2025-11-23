@@ -1,6 +1,6 @@
-import Module from "../models/Module.js";
+const Module = require('../models/Module');
 
-export const getModules = async (req, res) => {
+exports.getModules = async (req, res) => {
   try {
     const modules = await Module.find({});
     res.status(200).json(modules);
