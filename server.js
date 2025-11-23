@@ -9,6 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const moduleRoutes = require('./routes/moduleRoutes');
 
 connectDB();
 
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/modules', moduleRoutes);
 
 app.get('/', (req, res) => res.send('Multi-vendor backend running'));
 
