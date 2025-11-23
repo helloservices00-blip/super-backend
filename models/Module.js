@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+const express = require('express');
+const { getModules } = require('../controllers/moduleController');
 
-const moduleSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-}, { timestamps: true });
+const router = express.Router();
 
-const Module = mongoose.model("Module", moduleSchema);
-export default Module;
+router.get('/', getModules);
+
+module.exports = router;
