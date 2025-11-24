@@ -1,8 +1,5 @@
-const router = require("express").Router();
-const { getSubcategoriesByCategory, createSubcategory } = require("../controllers/subcategoryController");
-
-// relative to app.js /api/categories
-router.get("/:categoryId/subcategories", getSubcategoriesByCategory);
-router.post("/", createSubcategory);
-
-module.exports = router;
+import express from "express";
+import Subcategory from "../models/Subcategory.js";
+const router = express.Router();
+router.get("/", async (req, res) => res.json(await Subcategory.find()));
+export default router;

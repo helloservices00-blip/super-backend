@@ -1,8 +1,5 @@
-const router = require("express").Router();
-const { getCategoriesByVendor, createCategory } = require("../controllers/categoryController");
-
-// relative to app.js /api/vendors
-router.get("/:vendorId/categories", getCategoriesByVendor);
-router.post("/", createCategory);
-
-module.exports = router;
+import express from "express";
+import Category from "../models/Category.js";
+const router = express.Router();
+router.get("/", async (req, res) => res.json(await Category.find()));
+export default router;
