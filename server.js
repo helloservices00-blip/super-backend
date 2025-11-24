@@ -14,7 +14,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json()); // parse JSON bodies
 
 // --------------------
 // In-memory user store
@@ -86,5 +86,6 @@ app.get("/api/profile", (req, res) => {
 // START SERVER
 // --------------------
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-l
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
