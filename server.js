@@ -14,10 +14,10 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 app.use(cors(corsOptions));
-app.use(express.json()); // important for JSON parsing
+app.use(express.json());
 
 // --------------------
-// In-memory user store (replace with DB in production)
+// In-memory user store
 // --------------------
 const users = []; // { id, name, email, passwordHash, role }
 
@@ -36,7 +36,6 @@ app.post("/api/auth/register", async (req, res) => {
     if (existing) return res.status(400).json({ message: "Email already exists" });
 
     const passwordHash = await bcrypt.hash(password, 10);
-
     const newUser = { id: users.length + 1, name, email, passwordHash, role };
     users.push(newUser);
 
@@ -88,3 +87,4 @@ app.get("/api/profile", (req, res) => {
 // --------------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+l
