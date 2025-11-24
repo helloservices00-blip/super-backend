@@ -1,1 +1,0 @@
-multi-vendor app full package. After extracting, run backend and frontends as described in previous messages.
