@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+// Import Mongoose models
 import User from "./models/User.js";
 import Module from "./models/Module.js";
 import Shop from "./models/Shop.js";
@@ -24,7 +25,7 @@ app.use(express.json());
 // --------------------
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL, // your frontend URL
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -36,12 +37,12 @@ app.use(
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // --------------------
 // Auth Middleware
 // --------------------
-const authMiddleware = async (req, res, next) => {
+const authMiddleware = (req, res, next) => {
   const token = req.headers["authorization"]?.split(" ")[1];
   if (!token) return res.status(401).json({ message: "No token provided" });
 
@@ -55,7 +56,7 @@ const authMiddleware = async (req, res, next) => {
 };
 
 // --------------------
-// REGISTER
+// AUTH ROUTES
 // --------------------
 app.post("/api/auth/register", async (req, res) => {
   try {
@@ -76,9 +77,6 @@ app.post("/api/auth/register", async (req, res) => {
   }
 });
 
-// --------------------
-// LOGIN
-// --------------------
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -105,24 +103,18 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // --------------------
-// MODULES
+// MODULES, SHOPS, CATEGORIES, SUBCATEGORIES
 // --------------------
 app.get("/api/modules", async (req, res) => {
   const modules = await Module.find({});
   res.json(modules);
 });
 
-// --------------------
-// SHOPS
-// --------------------
 app.get("/api/shops", async (req, res) => {
   const shops = await Shop.find({}).populate("moduleId", "name");
   res.json(shops);
 });
 
-// --------------------
-// CATEGORIES & SUBCATEGORIES
-// --------------------
 app.get("/api/categories", async (req, res) => {
   const categories = await Category.find({}).populate("shopId", "name");
   res.json(categories);
