@@ -12,18 +12,22 @@ router.post("/register", async (req, res) => {
     if (!name || !email || !password || !role)
       return res.status(400).json({ message: "All fields are required" });
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (await User.findOne({ email }))
       return res.status(400).json({ message: "Email already exists" });
 
     const passwordHash = await bcrypt.hash(password, 10);
-    const newUser = await User.create({ name, email, passwordHash, role });
+    const user = await User.create({ name, email, passwordHash, role });
 
     res.json({ message: "Registered successfully!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
+});
+
+// LOGIN
+router.post("/login", async (req, res) => {
+  // your login code here
 });
 
 export default router;
