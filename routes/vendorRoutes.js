@@ -1,17 +1,8 @@
-const express = require('express');
-const router = express.Router();
-const { body } = require('express-validator');
-const { registerVendor, loginVendor, listVendors } = require('../controllers/vendorController');
-const { protect, adminOnly } = require('../middlewares/authMiddleware');
+const router = require("express").Router();
+const { getVendorsByModule, createVendor } = require("../controllers/vendorController");
 
-router.post('/register', [
-  body('name').notEmpty(),
-  body('email').isEmail(),
-  body('password').isLength({ min: 6 }),
-  body('shopName').notEmpty()
-], registerVendor);
-
-router.post('/login', loginVendor);
-router.get('/', protect, adminOnly, listVendors);
+// relative to app.js /api/modules
+router.get("/:moduleId/vendors", getVendorsByModule);
+router.post("/", createVendor);
 
 module.exports = router;
