@@ -1,12 +1,7 @@
-const mongoose = require('mongoose');
-
+import mongoose from "mongoose";
 const productSchema = new mongoose.Schema({
-  vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor', required: true },
-  name: { type: String, required: true },
-  description: { type: String },
-  price: { type: Number, required: true },
-  stock: { type: Number, default: 0 },
-  category: { type: String }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Product', productSchema);
+  name: String,
+  price: Number,
+  subcategory: { type: mongoose.Schema.Types.ObjectId, ref: "Subcategory" }
+});
+export default mongoose.model("Product", productSchema);
