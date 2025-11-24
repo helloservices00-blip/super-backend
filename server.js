@@ -1,36 +1,12 @@
-const express = require('express');
-require('dotenv').config();
-const cors = require('cors');
-const morgan = require('morgan');
-const connectDB = require('./config/db');
+const app = require("./app");
+const mongoose = require("mongoose");
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const vendorRoutes = require('./routes/vendorRoutes');
-const productRoutes = require('./routes/productRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const moduleRoutes = require('./routes/moduleRoutes');
+const PORT = process.env.PORT || 5000;
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/multivendor";
 
-connectDB();
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(morgan('dev'));
-
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/vendors', vendorRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
-app.use('/api/modules', moduleRoutes);
-
-app.get('/', (req, res) => res.send('Multi-vendor backend running'));
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: err.message });
-});
-
-const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log("MongoDB connected");
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+  })
+  .catch(err => console.error("DB connection error:", err));
