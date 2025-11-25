@@ -25,7 +25,7 @@ app.use(express.json());
 // --------------------
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL, // your frontend URL
+    origin: process.env.FRONTEND_URL,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -58,25 +58,40 @@ const authMiddleware = (req, res, next) => {
 // --------------------
 // AUTH ROUTES
 // --------------------
+
+// Register user
 app.post("/api/auth/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     if (!name || !email || !password || !role)
       return res.status(400).json({ message: "All fields are required" });
 
-    if (await User.findOne({ email }))
+    const existingUser = await User.findOne({ email });
+    if (existingUser)
       return res.status(400).json({ message: "Email already exists" });
 
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, passwordHash, role });
 
-    res.json({ message: "Registered successfully!" });
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET || "secret123",
+      { expiresIn: "1d" }
+    );
+
+    res.json({
+      message: "Registered successfully!",
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      token,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error" });
   }
 });
 
+// Login user
 app.post("/api/auth/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -105,22 +120,22 @@ app.post("/api/auth/login", async (req, res) => {
 // --------------------
 // MODULES, SHOPS, CATEGORIES, SUBCATEGORIES
 // --------------------
-app.get("/api/modules", async (req, res) => {
+app.get("/api/modules", authMiddleware, async (req, res) => {
   const modules = await Module.find({});
   res.json(modules);
 });
 
-app.get("/api/shops", async (req, res) => {
+app.get("/api/shops", authMiddleware, async (req, res) => {
   const shops = await Shop.find({}).populate("moduleId", "name");
   res.json(shops);
 });
 
-app.get("/api/categories", async (req, res) => {
+app.get("/api/categories", authMiddleware, async (req, res) => {
   const categories = await Category.find({}).populate("shopId", "name");
   res.json(categories);
 });
 
-app.get("/api/subcategories", async (req, res) => {
+app.get("/api/subcategories", authMiddleware, async (req, res) => {
   const subcategories = await Subcategory.find({}).populate("categoryId", "name");
   res.json(subcategories);
 });
@@ -128,14 +143,14 @@ app.get("/api/subcategories", async (req, res) => {
 // --------------------
 // PRODUCTS
 // --------------------
-app.get("/api/products", async (req, res) => {
+app.get("/api/products", authMiddleware, async (req, res) => {
   const products = await Product.find({})
     .populate("categoryId", "name")
     .populate("vendorId", "name");
   res.json(products);
 });
 
-app.get("/api/products/:id", async (req, res) => {
+app.get("/api/products/:id", authMiddleware, async (req, res) => {
   const product = await Product.findById(req.params.id)
     .populate("categoryId", "name")
     .populate("vendorId", "name");
@@ -152,7 +167,7 @@ app.post("/api/products", authMiddleware, async (req, res) => {
 // --------------------
 // VENDORS
 // --------------------
-app.get("/api/vendors", async (req, res) => {
+app.get("/api/vendors", authMiddleware, async (req, res) => {
   const vendors = await Vendor.find({});
   res.json(vendors);
 });
